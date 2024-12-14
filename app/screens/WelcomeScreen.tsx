@@ -1,11 +1,13 @@
 import { FC } from "react"
 import { Image, ImageStyle, TextStyle, View, ViewStyle } from "react-native"
-import { Text, Screen } from "@/components"
+import { Button, Screen, Text } from "@/components"
 import { isRTL } from "../i18n"
 import { AppStackScreenProps } from "../navigators"
 import { $styles, type ThemedStyle } from "@/theme"
 import { useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
 import { useAppTheme } from "@/utils/useAppTheme"
+import { useNavigation } from "@react-navigation/native"
+import { $topContainer } from "@/screens/styles/topContainer"
 
 const welcomeLogo = require("../../assets/images/logo.png")
 const welcomeFace = require("../../assets/images/welcome-face.png")
@@ -14,6 +16,7 @@ interface WelcomeScreenProps extends AppStackScreenProps<"Welcome"> {}
 
 export const WelcomeScreen: FC<WelcomeScreenProps> = () => {
   const { themed, theme } = useAppTheme()
+  const navigation = useNavigation()
 
   const $bottomContainerInsets = useSafeAreaInsetsStyle(["bottom"])
 
@@ -38,18 +41,13 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = () => {
 
       <View style={themed([$bottomContainer, $bottomContainerInsets])}>
         <Text tx="welcomeScreen:postscript" size="md" />
+        <Button onPress={() => navigation.navigate("Brand" as never)}>
+          <Text>Go to Brand</Text>
+        </Button>
       </View>
     </Screen>
   )
 }
-
-const $topContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  flexShrink: 1,
-  flexGrow: 1,
-  flexBasis: "57%",
-  justifyContent: "center",
-  paddingHorizontal: spacing.lg,
-})
 
 const $bottomContainer: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   flexShrink: 1,
