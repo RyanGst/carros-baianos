@@ -1,11 +1,13 @@
-import { FC, useState } from "react"
-import { View, ViewStyle } from "react-native"
-import { AppStackScreenProps } from "@/navigators"
 import { ListView, Screen, Text, TextField } from "@/components"
 import { useData } from "@/hooks/useData"
+import { AppStackScreenProps } from "@/navigators"
 import { brandRepository } from "@/repository/brand.repository"
-import { useAppTheme } from "@/utils/useAppTheme"
+import { BrandResponse } from "@/repository/BrandResponse"
 import type { ThemedStyle } from "@/theme"
+import { useAppTheme } from "@/utils/useAppTheme"
+import { FC, useState } from "react"
+import { View, ViewStyle } from "react-native"
+import { ModelSelectItem } from "./ModelSelectItem"
 
 // import { useNavigation } from "@react-navigation/native"
 
@@ -15,6 +17,9 @@ export const ModelsScreen: FC<ModelsScreenProps> = ({ route: { params } }) => {
   const { id } = params ?? { id: "" }
   const { themed } = useAppTheme()
   const [input, setInput] = useState("")
+  const { data, isError, mutate, isLoading } = useData("models", () =>
+    brandRepository.getModelsByBrand(id),
+  )
 
   if (!id) {
     return (
@@ -23,8 +28,6 @@ export const ModelsScreen: FC<ModelsScreenProps> = ({ route: { params } }) => {
       </Screen>
     )
   }
-
-  const { data, isError } = useData("models", () => brandRepository.getModelsByBrand(id))
 
   if (isError) {
     return (
@@ -38,10 +41,10 @@ export const ModelsScreen: FC<ModelsScreenProps> = ({ route: { params } }) => {
     item.nome.toLowerCase().includes(input.toLowerCase()),
   )
 
-  const renderListItem = ({ item }) => <Text text={item.nome} />
+  const renderListItem = ({ item }: { item: BrandResponse }) => <ModelSelectItem item={item} />
 
   return (
-    <Screen style={$root} preset="fixed">
+    <Screen style={$root} preset="scroll">
       <View style={themed($topContainer)}>
         <TextField placeholder={"Busca..."} value={input} onChangeText={setInput} />
         <ListView data={filteredData} renderItem={renderListItem} />

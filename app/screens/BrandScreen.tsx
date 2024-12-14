@@ -5,15 +5,19 @@ import { brandRepository } from "@/repository/brand.repository"
 import { BrandResponse } from "@/repository/BrandResponse"
 import { $styles, type ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
-import { FC, useState } from "react"
-import { View, ViewStyle } from "react-native"
+import { FC, useMemo, useState } from "react"
+import { RefreshControl, View, ViewStyle } from "react-native"
 
 interface BrandScreenProps extends AppStackScreenProps<"Brand"> {}
 
 export const BrandScreen: FC<BrandScreenProps> = ({ navigation }) => {
   const [input, setInput] = useState("")
   const { themed } = useAppTheme()
-  const { data, isError } = useData("brand", () => brandRepository.getBrands())
+  const { data, isError, mutate, isLoading } = useData("brand", () => brandRepository.getBrands())
+
+  const refreshControl = useMemo(() => {
+    return <RefreshControl refreshing={isLoading} onRefresh={mutate} progressViewOffset={50} />
+  }, [isLoading, mutate])
 
   if (isError) {
     return (
@@ -41,7 +45,7 @@ export const BrandScreen: FC<BrandScreenProps> = ({ navigation }) => {
     <Screen preset="fixed" contentContainerStyle={$styles.flex1}>
       <View style={themed($topContainer)}>
         <TextField placeholder={"Busca..."} value={input} onChangeText={setInput} />
-        <ListView data={filteredData} renderItem={renderListItem} />
+        <ListView data={filteredData} renderItem={renderListItem} refreshControl={refreshControl} />
       </View>
     </Screen>
   )
