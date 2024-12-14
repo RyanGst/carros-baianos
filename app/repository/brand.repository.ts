@@ -15,7 +15,7 @@ const getModelsByBrand = async (brandId: string) => {
 }
 
 const getVehicleModels = async (brandId: string, modelId: string) => {
-  const response = await api.apisauce.get<ModelResponse>(
+  const response = await api.apisauce.get<BrandResponse[]>(
     `/carros/marcas/${brandId}/modelos/${modelId}/anos`,
   )
   return response.data
