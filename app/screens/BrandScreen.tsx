@@ -1,37 +1,50 @@
-import React, { FC } from "react"
-import { TextInput, View, ViewStyle } from "react-native"
+import { ListItem, ListView, Screen, Text, TextField } from "@/components"
+import { useData } from "@/hooks/useData"
 import { AppStackScreenProps } from "@/navigators"
-import { Screen, Text, TextField, ListView, ListItem } from "@/components"
+import { brandRepository } from "@/repository/brand.repository"
+import { BrandResponse } from "@/repository/BrandResponse"
 import { $styles, type ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
-
-// import { useNavigation } from "@react-navigation/native"
+import { FC, useState } from "react"
+import { View, ViewStyle } from "react-native"
 
 interface BrandScreenProps extends AppStackScreenProps<"Brand"> {}
 
-export const BrandScreen: FC<BrandScreenProps> = () => {
-  // Pull in navigation via hook
-  // const navigation = useNavigation()
-  const { themed, theme } = useAppTheme()
+export const BrandScreen: FC<BrandScreenProps> = ({ navigation }) => {
+  const [input, setInput] = useState("")
+  const { themed } = useAppTheme()
+  const { data, isError } = useData("brand", () => brandRepository.getBrands())
 
-  const brand = ["Acura", "Alfa Romeo"]
+  if (isError) {
+    return (
+      <Screen preset="fixed">
+        <Text text="Um Error Ocorreu" />
+      </Screen>
+    )
+  }
+
+  const filteredData = data?.filter((item) => item.nome.toLowerCase().includes(input.toLowerCase()))
+
+  const renderListItem = ({ item }: { item: BrandResponse }) => (
+    <ListItem
+      text={item.nome}
+      topSeparator={true}
+      bottomSeparator={true}
+      height={50}
+      onPress={() => {
+        navigation.navigate("Models", { id: item.codigo })
+      }}
+    />
+  )
+
   return (
-    <Screen style={$root} preset="fixed" contentContainerStyle={$styles.flex1}>
+    <Screen preset="fixed" contentContainerStyle={$styles.flex1}>
       <View style={themed($topContainer)}>
-        <TextField placeholder={"Busca..."} />
-        <ListView
-          data={brand}
-          renderItem={({ item }) => (
-            <ListItem tx={item} topSeparator={true} bottomSeparator={true} height={50} />
-          )}
-        />
+        <TextField placeholder={"Busca..."} value={input} onChangeText={setInput} />
+        <ListView data={filteredData} renderItem={renderListItem} />
       </View>
     </Screen>
   )
-}
-
-const $root: ViewStyle = {
-  flex: 1,
 }
 
 const $topContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
