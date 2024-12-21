@@ -90,3 +90,6 @@ web-build/
 
 # Yarn
 .yarn/*
+
+# Expo
+.env
