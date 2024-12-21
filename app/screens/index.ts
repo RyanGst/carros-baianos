@@ -4,3 +4,4 @@ export * from "./ErrorScreen/ErrorBoundary"
 export * from "./BrandScreen"
 export { $topContainer } from "@/screens/styles/topContainer";
 export * from "./ModelsScreen"
+export * from "./ResultScreen"

@@ -4,13 +4,13 @@
  * Generally speaking, it will contain an auth flow (registration, login, forgot password)
  * and a "main" flow which the user will use once logged in.
  */
+import * as Screens from "@/screens"
+import { useAppTheme, useThemeProvider } from "@/utils/useAppTheme"
 import { NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack"
-import * as Screens from "@/screens"
+import { ComponentProps } from "react"
 import Config from "../config"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
-import { useAppTheme, useThemeProvider } from "@/utils/useAppTheme"
-import { ComponentProps } from "react"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -31,8 +31,13 @@ export type AppStackParamList = {
   Brand: undefined
   Models: {
     id: string
+    brandName: string
   }
-	// IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
+  Result: {
+    brand: string
+    model: string
+  }
+  // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
 
 /**
@@ -68,7 +73,8 @@ const AppStack = () => {
       <Stack.Screen name="Welcome" component={Screens.WelcomeScreen} />
       <Stack.Screen name="Brand" component={Screens.BrandScreen} />
       <Stack.Screen name="Models" component={Screens.ModelsScreen} />
-			{/* IGNITE_GENERATOR_ANCHOR_APP_STACK_SCREENS */}
+      <Stack.Screen name="Result" component={Screens.ResultScreen} />
+      {/* IGNITE_GENERATOR_ANCHOR_APP_STACK_SCREENS */}
     </Stack.Navigator>
   )
 }

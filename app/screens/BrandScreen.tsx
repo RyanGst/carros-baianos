@@ -36,7 +36,7 @@ export const BrandScreen: FC<BrandScreenProps> = ({ navigation }) => {
       bottomSeparator={true}
       height={50}
       onPress={() => {
-        navigation.navigate("Models", { id: item.codigo })
+        navigation.navigate("Models", { id: item.codigo, brandName: item.nome })
       }}
     />
   )

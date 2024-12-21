@@ -1,77 +1,90 @@
 import { Button, ListView, Screen, Text, TextField } from "@/components"
-import { useData } from "@/hooks/useData"
 import { AppStackScreenProps } from "@/navigators"
-import { brandRepository } from "@/repository/brand.repository"
 import { BrandResponse } from "@/repository/BrandResponse"
 import { $styles, ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
-import { FC, useState } from "react"
+import { FC, useCallback } from "react"
 import { View, ViewStyle } from "react-native"
 import Animated, { FadeIn } from "react-native-reanimated"
+import { useModelsScreen } from "./hooks/useModelsScreen"
 import { ModelSelectItem } from "./ModelSelectItem"
-
-// import { useNavigation } from "@react-navigation/native"
 
 interface ModelsScreenProps extends AppStackScreenProps<"Models"> {}
 
-export const ModelsScreen: FC<ModelsScreenProps> = ({ route: { params } }) => {
-  const { id } = params ?? { id: "" }
+export const ModelsScreen: FC<ModelsScreenProps> = ({ route: { params }, navigation }) => {
+  const { id, brandName } = params ?? { id: "", brandName: "" }
   const { themed } = useAppTheme()
-  const [input, setInput] = useState("")
-  const [selectedModel, setSelectedModel] = useState<BrandResponse | null>(null)
-  const { data, isError, mutate, isLoading } = useData("models", () =>
-    brandRepository.getModelsByBrand(id),
+  const { input, setInput, selectedModel, setSelectedModel, filteredModels, isLoading, isError } =
+    useModelsScreen(id)
+
+  const handleNavigateToResults = useCallback(() => {
+    if (!selectedModel) return
+    navigation.navigate("Result", {
+      brand: brandName,
+      model: selectedModel.nome,
+    })
+  }, [navigation, brandName, selectedModel])
+
+  const renderItem = useCallback(
+    ({ item }: { item: BrandResponse }) => (
+      <ModelSelectItem
+        item={item}
+        brandId={id}
+        selectedModel={selectedModel}
+        onSelect={setSelectedModel}
+      />
+    ),
+    [id, selectedModel, setSelectedModel],
   )
 
-  const onSelect = (a: BrandResponse) => {
-    setSelectedModel(a)
-  }
-
-  if (!id) {
-    return (
-      <Screen style={$root} preset="scroll">
-        <Text text="Selecione um modelo" />
-      </Screen>
-    )
-  }
-
-  if (isError) {
-    return (
-      <Screen style={$root} preset="fixed">
-        <Text text="Um Error Ocorreu" />
-      </Screen>
-    )
-  }
-
-  const filteredData = data?.modelos?.filter((item) =>
-    item.nome.toLowerCase().includes(input.toLowerCase()),
-  )
-
-  const renderListItem = ({ item }: { item: BrandResponse }) => (
-    <ModelSelectItem item={item} brandId={id} onSelect={onSelect} selectedModel={selectedModel} />
-  )
+  if (!id) return <ErrorView message="Selecione uma marca primeiro" />
+  if (isError) return <ErrorView message="Erro ao carregar modelos" />
+  if (isLoading) return <LoadingView />
 
   return (
     <Screen preset="scroll" contentContainerStyle={$styles.flex1}>
       <View style={themed($topContainer)}>
-        <TextField placeholder={"Busca..."} value={input} onChangeText={setInput} />
-        <ListView data={filteredData} renderItem={renderListItem} />
+        <TextField placeholder="Buscar modelo..." value={input} onChangeText={setInput} />
+        <ListView
+          data={filteredModels}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.codigo}
+        />
       </View>
-      {!!selectedModel && (
-        <Animated.View style={$buttonContainer} entering={FadeIn}>
-          <Button text="Resetar" onPress={() => setSelectedModel(null)} />
-          <Button preset={"filled"} text="Ver resultados" onPress={() => {}} />
-        </Animated.View>
+
+      {selectedModel && (
+        <ActionButtons onClear={() => setSelectedModel(null)} onSubmit={handleNavigateToResults} />
       )}
     </Screen>
   )
 }
 
-const $root: ViewStyle = {
+const ActionButtons = ({ onClear, onSubmit }) => (
+  <Animated.View style={$buttonContainer} entering={FadeIn}>
+    <Button text="Limpar" onPress={onClear} />
+    <Button preset="filled" text="Ver resultados" onPress={onSubmit} />
+  </Animated.View>
+)
+
+const ErrorView = ({ message }: { message: string }) => (
+  <Screen preset="fixed" style={$centerContent}>
+    <Text text={message} />
+  </Screen>
+)
+
+const LoadingView = () => (
+  <Screen preset="fixed" style={$centerContent}>
+    <Text text="Carregando..." />
+  </Screen>
+)
+
+const $centerContent: ViewStyle = {
   flex: 1,
+  justifyContent: "center",
+  alignItems: "center",
 }
+
 const $buttonContainer: ViewStyle = {
-  flex: 1,
   position: "absolute",
   bottom: "20%",
   left: 0,
@@ -79,16 +92,13 @@ const $buttonContainer: ViewStyle = {
   flexDirection: "row",
   gap: 10,
   justifyContent: "center",
-  alignItems: "center",
   paddingHorizontal: 20,
   paddingVertical: 10,
   backgroundColor: "rgba(0, 0, 0, 0.6)",
 }
 
 const $topContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  flexShrink: 1,
   flexGrow: 1,
-  flexBasis: "57%",
   paddingHorizontal: spacing.lg,
   paddingVertical: spacing.xxl,
 })
