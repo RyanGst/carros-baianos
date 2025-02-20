@@ -45,7 +45,12 @@ export const BrandScreen: FC<BrandScreenProps> = ({ navigation }) => {
     <Screen preset="fixed" contentContainerStyle={$styles.flex1}>
       <View style={themed($topContainer)}>
         <TextField placeholder={"Busca..."} value={input} onChangeText={setInput} />
-        <ListView data={filteredData} renderItem={renderListItem} refreshControl={refreshControl} />
+        <ListView
+          data={filteredData}
+          renderItem={renderListItem}
+          refreshControl={refreshControl}
+          estimatedItemSize={52}
+        />
       </View>
     </Screen>
   )
@@ -54,7 +59,6 @@ export const BrandScreen: FC<BrandScreenProps> = ({ navigation }) => {
 const $topContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   flexShrink: 1,
   flexGrow: 1,
-  flexBasis: "57%",
   paddingHorizontal: spacing.lg,
-  paddingVertical: spacing.xxl,
+  paddingVertical: spacing.xxxl,
 })

@@ -1,15 +1,14 @@
-import { FC } from "react"
-import { Image, ImageStyle, TextStyle, View, ViewStyle } from "react-native"
-import { Button, Screen, Text } from "@/components"
-import { isRTL } from "../i18n"
-import { AppStackScreenProps } from "../navigators"
+import { Button, Icon, Screen, Text } from "@/components"
+import { $topContainer } from "@/screens/styles/topContainer"
 import { $styles, type ThemedStyle } from "@/theme"
-import { useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { useNavigation } from "@react-navigation/native"
-import { $topContainer } from "@/screens/styles/topContainer"
+import { FC } from "react"
+import { Image, ImageStyle, TextStyle, View, ViewStyle } from "react-native"
+import { isRTL } from "../i18n"
+import { AppStackScreenProps } from "../navigators"
+import { useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
 
-const welcomeLogo = require("../../assets/images/logo.png")
 const welcomeFace = require("../../assets/images/welcome-face.png")
 
 interface WelcomeScreenProps extends AppStackScreenProps<"Welcome"> {}
@@ -23,7 +22,6 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = () => {
   return (
     <Screen preset="fixed" contentContainerStyle={$styles.flex1}>
       <View style={themed($topContainer)}>
-        <Image style={themed($welcomeLogo)} source={welcomeLogo} resizeMode="contain" />
         <Text
           testID="welcome-heading"
           style={themed($welcomeHeading)}
@@ -40,9 +38,13 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = () => {
       </View>
 
       <View style={themed([$bottomContainer, $bottomContainerInsets])}>
-        <Text tx="welcomeScreen:postscript" size="md" />
+        <Text text="Bem-vindo ao Carros Mancos" preset="heading" />
+        <Text text="Cada meme é mais rápido que um Opala na estrada!" size="md" />
         <Button onPress={() => navigation.navigate("Brand" as never)}>
-          <Text>Go to Brand</Text>
+          <View style={themed($buttonContainer)}>
+            <Icon icon="check" size={20} />
+            <Text>Começar</Text>
+          </View>
         </Button>
       </View>
     </Screen>
@@ -52,18 +54,12 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = () => {
 const $bottomContainer: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   flexShrink: 1,
   flexGrow: 0,
-  flexBasis: "43%",
+  flexBasis: "40%",
   backgroundColor: colors.palette.neutral100,
   borderTopLeftRadius: 16,
   borderTopRightRadius: 16,
   paddingHorizontal: spacing.lg,
   justifyContent: "space-around",
-})
-
-const $welcomeLogo: ThemedStyle<ImageStyle> = ({ spacing }) => ({
-  height: 88,
-  width: "100%",
-  marginBottom: spacing.xxl,
 })
 
 const $welcomeFace: ImageStyle = {
@@ -77,4 +73,10 @@ const $welcomeFace: ImageStyle = {
 
 const $welcomeHeading: ThemedStyle<TextStyle> = ({ spacing }) => ({
   marginBottom: spacing.md,
+})
+
+const $buttonContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  flexDirection: "row",
+  alignItems: "center",
+  gap: spacing.md,
 })
