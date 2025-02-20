@@ -100,5 +100,5 @@ const $buttonContainer: ViewStyle = {
 const $topContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   flexGrow: 1,
   paddingHorizontal: spacing.lg,
-  paddingVertical: spacing.xxl,
+  paddingVertical: spacing.xxxl,
 })

@@ -5,35 +5,30 @@ import { useSharedValue } from "react-native-reanimated"
 
 export const useModelSelect = (brandId: string, modelId: string) => {
   const isExpanded = useSharedValue(false)
-  const [models, setModels] = useState<BrandResponse[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [{ models, isLoading, error }, setState] = useState({
+    models: [] as BrandResponse[],
+    isLoading: false,
+    error: null as string | null,
+  })
 
   const fetchData = useCallback(async () => {
+    setState((prev) => ({ ...prev, isLoading: true, error: null }))
+
     try {
-      setIsLoading(true)
-      setError(null)
       const vehicleModels = await brandRepository.getVehicleModels(brandId, modelId)
       if (!vehicleModels) throw new Error("Nenhum modelo encontrado")
-      setModels(vehicleModels)
+
+      setState((prev) => ({ ...prev, models: vehicleModels, isLoading: false }))
     } catch (err) {
-      setError("Erro ao carregar modelos")
       console.error(err)
-    } finally {
-      setIsLoading(false)
+      setState((prev) => ({ ...prev, error: "Erro ao carregar modelos", isLoading: false }))
     }
   }, [brandId, modelId])
 
   const toggleAccordion = useCallback(() => {
+    if (!isExpanded.value) fetchData()
     isExpanded.value = !isExpanded.value
-    if (isExpanded.value) fetchData()
   }, [isExpanded, fetchData])
 
-  return {
-    isExpanded,
-    models,
-    isLoading,
-    error,
-    toggleAccordion,
-  }
+  return { isExpanded, models, isLoading, error, toggleAccordion }
 }
