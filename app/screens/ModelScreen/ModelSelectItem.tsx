@@ -1,30 +1,36 @@
 import { Icon, Radio, Text } from "@/components"
-import { BrandResponse } from "@/repository/BrandResponse"
-import { AccordionContent } from "@/screens/AccordionContent"
+import { AccordionContent } from "@/screens/ModelScreen/AccordionContent"
 import { ThemedStyle } from "@/theme"
+import { BrandResponse } from "@/types/BrandResponse"
+import { RoastCarParams } from "@/types/RoastCarParams"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { TouchableOpacity, View, ViewStyle } from "react-native"
-import { useModelSelect } from "./hooks/useModelSelect"
+import { useYearSelect } from "../hooks/useModelSelect"
 
 type Props = {
   item: BrandResponse
   brandId: string
-  onSelect: (model: BrandResponse) => void
+  onSelect: (model: RoastCarParams) => void
   selectedModel: BrandResponse | null
 }
 
 export const ModelSelectItem = ({ item, brandId, onSelect, selectedModel }: Props) => {
   const { themed } = useAppTheme()
-  const { isExpanded, models, isLoading, error, toggleAccordion } = useModelSelect(
-    brandId,
-    item.codigo,
-  )
+  const {
+    isExpanded,
+    models: vehicleYears,
+    isLoading,
+    error,
+    toggleAccordion,
+  } = useYearSelect(brandId, item.codigo)
 
-  const handleSelect = (model: BrandResponse) => {
-    onSelect({
-      codigo: model.codigo,
-      nome: `${item.nome} - ${model.nome}`,
-    })
+  const handleSelectYear = (model: BrandResponse) => {
+    const data: RoastCarParams = {
+      brandId,
+      modelId: item.codigo,
+      yearId: model.codigo,
+    }
+    onSelect(data)
     toggleAccordion()
   }
 
@@ -45,12 +51,12 @@ export const ModelSelectItem = ({ item, brandId, onSelect, selectedModel }: Prop
           {error && <Text text={error} preset="bold" />}
           {!isLoading &&
             !error &&
-            models.map((model) => (
+            vehicleYears.map((model) => (
               <Radio
                 key={model.codigo}
                 label={model.nome}
                 value={model.codigo === selectedModel?.codigo}
-                onValueChange={() => handleSelect(model)}
+                onValueChange={() => handleSelectYear(model)}
               />
             ))}
         </View>

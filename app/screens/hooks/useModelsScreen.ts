@@ -1,11 +1,11 @@
 import { useData } from "@/hooks/useData"
 import { brandRepository } from "@/repository/brand.repository"
-import { BrandResponse } from "@/repository/BrandResponse"
+import { RoastCarParams } from "@/types/RoastCarParams"
 import { useState } from "react"
 
 export const useModelsScreen = (id: string) => {
   const [input, setInput] = useState("")
-  const [selectedModel, setSelectedModel] = useState<BrandResponse | null>(null)
+  const [selectedModel, setSelectedModel] = useState<RoastCarParams | null>(null)
 
   const { data, isError, isLoading } = useData(
     "models",

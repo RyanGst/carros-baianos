@@ -1,12 +1,12 @@
 import { brandRepository } from "@/repository/brand.repository"
-import { BrandResponse } from "@/repository/BrandResponse"
+import { BrandResponse } from "@/types/BrandResponse"
 import { useCallback, useState } from "react"
 import { useSharedValue } from "react-native-reanimated"
 
-export const useModelSelect = (brandId: string, modelId: string) => {
+export const useYearSelect = (brandId: string, modelId: string) => {
   const isExpanded = useSharedValue(false)
-  const [{ models, isLoading, error }, setState] = useState({
-    models: [] as BrandResponse[],
+  const [{ yearsFromModels, isLoading, error }, setState] = useState({
+    yearsFromModels: [] as BrandResponse[],
     isLoading: false,
     error: null as string | null,
   })
@@ -18,7 +18,7 @@ export const useModelSelect = (brandId: string, modelId: string) => {
       const vehicleModels = await brandRepository.getVehicleModels(brandId, modelId)
       if (!vehicleModels) throw new Error("Nenhum modelo encontrado")
 
-      setState((prev) => ({ ...prev, models: vehicleModels, isLoading: false }))
+      setState((prev) => ({ ...prev, yearsFromModels: vehicleModels, isLoading: false }))
     } catch (err) {
       console.error(err)
       setState((prev) => ({ ...prev, error: "Erro ao carregar modelos", isLoading: false }))
@@ -30,5 +30,5 @@ export const useModelSelect = (brandId: string, modelId: string) => {
     isExpanded.value = !isExpanded.value
   }, [isExpanded, fetchData])
 
-  return { isExpanded, models, isLoading, error, toggleAccordion }
+  return { isExpanded, models: yearsFromModels, isLoading, error, toggleAccordion }
 }

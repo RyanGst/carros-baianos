@@ -1,7 +1,8 @@
-export * from "./WelcomeScreen"
 export * from "./ErrorScreen/ErrorBoundary"
+export * from "./WelcomeScreen"
 // export other screens here
-export * from "./BrandScreen"
-export { $topContainer } from "@/screens/styles/topContainer";
-export * from "./ModelsScreen"
-export * from "./ResultScreen"
+export { $topContainer } from "@/screens/styles/topContainer"
+export * from "./BrandScreen/BrandScreen"
+export * from "./ModelScreen/ModelsScreen"
+export * from "./ResultScreen/ResultScreen"
+

@@ -2,8 +2,8 @@ import { ListItem, ListView, Screen, Text, TextField } from "@/components"
 import { useData } from "@/hooks/useData"
 import { AppStackScreenProps } from "@/navigators"
 import { brandRepository } from "@/repository/brand.repository"
-import { BrandResponse } from "@/repository/BrandResponse"
 import { $styles, type ThemedStyle } from "@/theme"
+import { BrandResponse } from "@/types/BrandResponse"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { FC, useMemo, useState } from "react"
 import { RefreshControl, View, ViewStyle } from "react-native"
@@ -29,15 +29,17 @@ export const BrandScreen: FC<BrandScreenProps> = ({ navigation }) => {
 
   const filteredData = data?.filter((item) => item.nome.toLowerCase().includes(input.toLowerCase()))
 
+  const navigateToModels = (item: BrandResponse) => {
+    navigation.navigate("Models", { brandId: item.codigo, brandName: item.nome })
+  }
+
   const renderListItem = ({ item }: { item: BrandResponse }) => (
     <ListItem
       text={item.nome}
       topSeparator={true}
       bottomSeparator={true}
       height={50}
-      onPress={() => {
-        navigation.navigate("Models", { id: item.codigo, brandName: item.nome })
-      }}
+      onPress={() => navigateToModels(item)}
     />
   )
 

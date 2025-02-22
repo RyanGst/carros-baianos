@@ -1,27 +1,38 @@
 import { Button, ListView, Screen, Text, TextField } from "@/components"
 import { AppStackScreenProps } from "@/navigators"
-import { BrandResponse } from "@/repository/BrandResponse"
+import { brandRepository } from "@/repository/brand.repository"
 import { $styles, ThemedStyle } from "@/theme"
+import { BrandResponse } from "@/types/BrandResponse"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { FC, useCallback } from "react"
 import { View, ViewStyle } from "react-native"
 import Animated, { FadeIn } from "react-native-reanimated"
-import { useModelsScreen } from "./hooks/useModelsScreen"
+import { useModelsScreen } from "../hooks/useModelsScreen"
 import { ModelSelectItem } from "./ModelSelectItem"
 
 interface ModelsScreenProps extends AppStackScreenProps<"Models"> {}
 
 export const ModelsScreen: FC<ModelsScreenProps> = ({ route: { params }, navigation }) => {
-  const { id, brandName } = params ?? { id: "", brandName: "" }
+  const { brandId: id, brandName } = params ?? { brandId: "", brandName: "" }
   const { themed } = useAppTheme()
   const { input, setInput, selectedModel, setSelectedModel, filteredModels, isLoading, isError } =
     useModelsScreen(id)
 
-  const handleNavigateToResults = useCallback(() => {
+  const handleNavigateToResults = useCallback(async () => {
     if (!selectedModel) return
+
+    const params = {
+      brandId: selectedModel.brandId,
+      modelId: selectedModel.modelId,
+      yearId: selectedModel.yearId,
+    }
+
+    const vehicleDetails = await brandRepository.getVehicleDetails(params)
+
+    if (!vehicleDetails) return
+
     navigation.navigate("Result", {
-      brand: brandName,
-      model: selectedModel.nome,
+      vehicleDetails,
     })
   }, [navigation, brandName, selectedModel])
 
@@ -31,7 +42,7 @@ export const ModelsScreen: FC<ModelsScreenProps> = ({ route: { params }, navigat
         item={item}
         brandId={id}
         selectedModel={selectedModel}
-        onSelect={setSelectedModel}
+        onSelect={(model) => setSelectedModel(model)}
       />
     ),
     [id, selectedModel, setSelectedModel],

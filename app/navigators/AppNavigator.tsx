@@ -5,6 +5,7 @@
  * and a "main" flow which the user will use once logged in.
  */
 import * as Screens from "@/screens"
+import { VehicleDetails } from "@/types/VehicleDetails"
 import { useAppTheme, useThemeProvider } from "@/utils/useAppTheme"
 import { NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack"
@@ -30,12 +31,11 @@ export type AppStackParamList = {
   // 🔥 Your screens go here
   Brand: undefined
   Models: {
-    id: string
+    brandId: string
     brandName: string
   }
   Result: {
-    brand: string
-    model: string
+    vehicleDetails: VehicleDetails
   }
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
@@ -62,7 +62,6 @@ const AppStack = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerShown: false,
         navigationBarColor: colors.background,
         contentStyle: {
           backgroundColor: colors.background,
@@ -70,7 +69,13 @@ const AppStack = () => {
       }}
     >
       {/** 🔥 Your screens go here */}
-      <Stack.Screen name="Welcome" component={Screens.WelcomeScreen} />
+      <Stack.Screen
+        name="Welcome"
+        component={Screens.WelcomeScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
       <Stack.Screen name="Brand" component={Screens.BrandScreen} />
       <Stack.Screen name="Models" component={Screens.ModelsScreen} />
       <Stack.Screen name="Result" component={Screens.ResultScreen} />

@@ -1,5 +1,7 @@
 import { api } from "@/services/api"
-import { BrandResponse } from "./BrandResponse"
+import { RoastCarParams } from "@/types/RoastCarParams"
+import { BrandResponse } from "../types/BrandResponse"
+import { VehicleDetails } from "../types/VehicleDetails"
 
 const getBrands = async () => {
   const response = await api.apisauce.get<BrandResponse[]>("/carros/marcas")
@@ -40,4 +42,17 @@ const getVehiclePrice = async (brandId: string, modelId: string, year: string) =
   return response.data
 }
 
-export const brandRepository = { getBrands, getModelsByBrand, getVehicleModels, getVehiclePrice }
+const getVehicleDetails = async ({ brandId, modelId, yearId }: RoastCarParams) => {
+  const response = await api.apisauce.get<VehicleDetails>(
+    `/carros/marcas/${brandId}/modelos/${modelId}/anos/${yearId}`,
+  )
+  return response.data
+}
+
+export const brandRepository = {
+  getBrands,
+  getModelsByBrand,
+  getVehicleModels,
+  getVehiclePrice,
+  getVehicleDetails,
+}
