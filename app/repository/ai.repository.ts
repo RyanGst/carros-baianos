@@ -15,7 +15,7 @@ Example output:
 const AI_CONFIG = {
   model: "llama3-8b-8192",
   temperature: 0.7,
-  max_tokens: 1024,
+  max_tokens: 2048,
   stream: false,
   response_format: { type: "json_object" },
   stop: null,
